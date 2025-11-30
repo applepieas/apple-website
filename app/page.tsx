@@ -1,10 +1,13 @@
 import NavBar from "./components/NavBar"
+import HeroSection from "./sections/HeroSection"
+import ProductSection from "./sections/ProductSection"
 
 const page = () => {
   return (
     <main>
       <NavBar />
-      <h1>Welcome to the Home Page</h1>
+      <HeroSection />
+      <ProductSection />
     </main>
   )
 }

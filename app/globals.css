@@ -153,7 +153,7 @@ body {
 
   /* ---------------- PRODUCT VIEWER ---------------- */
   #product-viewer {
-    @apply container relative min-h-[93vh] mx-auto px-5 2xl:px-0 mt-40;
+    @apply container relative h-screen mx-auto px-5 2xl:px-0 mt-40;
 
     h2 {
       @apply text-white font-semibold text-3xl lg:text-6xl;
@@ -188,7 +188,7 @@ body {
     }
 
     #canvas {
-      @apply w-full h-[80vh] lg:h-dvh relative z-40;
+      @apply w-full h-full relative z-40;
     }
   }
 

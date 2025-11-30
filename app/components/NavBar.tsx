@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { navLinks } from '@/lib/constants'
 import React from 'react'
 
 
@@ -9,14 +10,7 @@ const NavBar = () => {
         <img src="/logo.svg" alt="Apple Logo" />
 
         <ul>
-          {[
-            { label: 'Store' },
-            { label: 'Mac' },
-            { label: 'iPhone' },
-            { label: 'Watch' },
-            { label: 'AirPods' },
-            { label: 'Vision' },
-          ].map(({ label }) => (
+          {navLinks.map(({ label }) => (
             <a key={label} href={label}>{label}</a>
           ))}
         </ul>
