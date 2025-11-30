@@ -3,16 +3,12 @@
 import clsx from 'clsx'
 import useMacbookStore from '../store'
 import { Canvas } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
-import MacbookModel14 from '../components/models/Macbook-14'
 import StudioLights from '../components/three/StudioLights'
 import ModelSwitcher from '../components/three/ModelSwitcher'
 import { useMediaQuery } from 'react-responsive'
-import { is } from '@react-three/fiber/dist/declarations/src/core/utils'
 
 const ProductSection = () => {
   const { color, setColor, scale, setScale } = useMacbookStore()
-
   const isMobile = useMediaQuery({ query: '(max-width: 768px)' })
 
   return (
@@ -20,7 +16,7 @@ const ProductSection = () => {
       <h2>Take a closer look</h2>
 
       <div className="controls">
-        <p className="info">MacbookPro 16&quot; in {color}</p>
+        <p className="info">MacBook Pro {scale === 0.08 ? '16"' : '14"'} in {color}</p>
 
         <div className="flex-center gap-5 mt-5">
           <div className="color-control">
@@ -33,28 +29,23 @@ const ProductSection = () => {
           </div>
 
           <div className="size-control">
-
             <div
               className={clsx(scale === 0.06 ? 'bg-white text-black' : 'bg-transparent text-white')}
               onClick={() => setScale(0.06)}>
-              <p>14&quot;</p></div>
+              <p>14&quot;</p>
+            </div>
             <div
               className={clsx(scale === 0.08 ? 'bg-white text-black' : 'bg-transparent text-white')}
               onClick={() => setScale(0.08)}>
-              <p>16&quot;</p></div>
+              <p>16&quot;</p>
+            </div>
           </div>
-
         </div>
       </div>
 
-      <p className="text-white text-4xl">Render Canvas</p>
-
       <Canvas id='canvas' camera={{ position: [0, 2, 5], fov: 50, near: 0.1, far: 100 }}>
         <StudioLights />
-
-        {/* <MacbookModel14 color={color} scale={0.06} position={[0, 0.25, 0]} /> */}
-
-        <ModelSwitcher scale={isMobile ? - 0.03 : scale} isMobile={isMobile} />
+        <ModelSwitcher scale={scale} isMobile={isMobile} color={color} />
       </Canvas>
     </section>
   )

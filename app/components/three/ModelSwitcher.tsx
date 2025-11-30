@@ -1,56 +1,88 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import gsap from '@/lib/gsap'
 import { PresentationControls } from '@react-three/drei'
-import { useRef } from 'react'
+import { useRef, useEffect } from 'react'
 import MacbookModel16 from '../models/Macbook-16'
-import { Group } from 'next/dist/shared/lib/router/utils/route-regex'
+import MacbookModel14 from '../models/Macbook-14'
+import { useGSAP } from '@gsap/react'
 
 interface ModelSwitcherProps {
-  scale: number | string
+  scale: number
   isMobile: boolean
+  color: string
 }
 
-const ANIMATION_DURATION = 1;
-const OFFSET_DISTANCE = 5;
+const ANIMATION_DURATION = 1
+const OFFSET_DISTANCE = 5
 
-const fadeMashes = (group: Group | null, opacity: number): void => {
-  if (!group) return;
-
-  group.traverse((child) => {
-    if (child.isMesh) {
-      child.material.transparent = true;
-      gsap.to(child.material, { opacity, duration: ANIMATION_DURATION });
+const fadeMeshes = (group: any, opacity: number): void => {
+  if (!group) return
+  group.traverse((child: any) => {
+    if (child.isMesh && child.material) {
+      child.material.transparent = true
+      gsap.to(child.material, { opacity, duration: ANIMATION_DURATION })
     }
   })
 }
 
-const ModelSwitcher = ({ scale, isMobile }: ModelSwitcherProps) => {
-  const smallMacbookRef = useRef(null)
-  const largeMacbookRef = useRef(null)
+const moveGroup = (group: any, x: number): void => {
+  if (!group) return
+  gsap.to(group.position, { x, duration: ANIMATION_DURATION })
+}
 
-  const showLargeMacbook = scale === 0.08 || scale === 0.05
+const ModelSwitcher = ({ scale, isMobile, color }: ModelSwitcherProps) => {
+  const smallMacbookRef = useRef<any>(null)
+  const largeMacbookRef = useRef<any>(null)
+
+  const showLarge = scale === 0.08
+
+  // Set initial off-screen + opacity state once
+  useEffect(() => {
+    if (!smallMacbookRef.current || !largeMacbookRef.current) return
+    smallMacbookRef.current.position.x = 0
+    largeMacbookRef.current.position.x = OFFSET_DISTANCE
+    fadeMeshes(smallMacbookRef.current, 1)
+    fadeMeshes(largeMacbookRef.current, 0)
+  }, [])
+
+  useGSAP(() => {
+    if (showLarge) {
+      moveGroup(smallMacbookRef.current, -OFFSET_DISTANCE)
+      moveGroup(largeMacbookRef.current, 0)
+      fadeMeshes(smallMacbookRef.current, 0)
+      fadeMeshes(largeMacbookRef.current, 1)
+    } else {
+      moveGroup(smallMacbookRef.current, 0)
+      moveGroup(largeMacbookRef.current, OFFSET_DISTANCE)
+      fadeMeshes(smallMacbookRef.current, 1)
+      fadeMeshes(largeMacbookRef.current, 0)
+    }
+  }, [showLarge])
 
   const controlsConfig = {
     snap: true,
     speed: 1,
-    zoome: 1,
-    // polar: [-Math.PI, Math.PI],
-    azimuth: [-Infinity, Infinity],
+    zoom: 1,
+    azimuth: [-Infinity, Infinity] as [number, number],
     config: { mass: 1, tension: 0, friction: 26 }
   }
+
+  const smallScale = isMobile ? 0.035 : 0.06
+  const largeScale = isMobile ? 0.045 : 0.08
 
   return (
     <>
       <PresentationControls {...controlsConfig}>
-        <group ref={largeMacbookRef}>
-          <MacbookModel16 scale={isMobile ? 0.05 : 0.08} />
+        <group ref={smallMacbookRef}>
+          <MacbookModel14 scale={smallScale} color={color} />
         </group>
       </PresentationControls>
 
-      {/* <PresentationControls {...controlsConfig}>
-        <group ref={smallMacbookRef}>
-          <MacbookModel16 scale={isMobile ? 0.03 : 0.06} />
+      <PresentationControls {...controlsConfig}>
+        <group ref={largeMacbookRef}>
+          <MacbookModel16 scale={largeScale} color={color} />
         </group>
-      </PresentationControls> */}
+      </PresentationControls>
     </>
   )
 }
