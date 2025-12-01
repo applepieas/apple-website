@@ -8,13 +8,41 @@ Source: https://sketchfab.com/3d-models/macbook-pro-m3-16-inch-2024-8e34fc2b3031
 Title: macbook pro M3 16 inch 2024
 */
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useGLTF, useTexture } from '@react-three/drei'
+import { noChangeParts } from '@/lib/constants'
+import * as THREE from 'three'
 
-export default function MacbookModel16(props) {
-  const { nodes, materials } = useGLTF('/models/macbook-16-transformed.glb')
+export default function MacbookModel16({ color, ...props }) {
+  const { nodes, materials, scene } = useGLTF('/models/macbook-16-transformed.glb')
 
   const texture = useTexture('/screen.png')
+
+  useEffect(() => {
+    scene.traverse((child) => {
+      if (!child.isMesh) return
+      if (noChangeParts.includes(child.name)) return
+
+      const mat = child.material
+      if (Array.isArray(mat)) {
+        mat.forEach((m) => {
+          if (m && m.color) {
+            m.color.set(new THREE.Color(color))
+            // Preserve transparent state for GSAP fade animations
+            if (m.transparent !== undefined) {
+              m.needsUpdate = true
+            }
+          }
+        })
+      } else if (mat && mat.color) {
+        mat.color.set(new THREE.Color(color))
+        // Preserve transparent state for GSAP fade animations
+        if (mat.transparent !== undefined) {
+          mat.needsUpdate = true
+        }
+      }
+    })
+  }, [color, scene])
   return (
     <group {...props} dispose={null}>
       <mesh geometry={nodes.Object_10.geometry} material={materials.PaletteMaterial001} rotation={[Math.PI / 2, 0, 0]} />

@@ -15,12 +15,22 @@ interface ModelSwitcherProps {
 const ANIMATION_DURATION = 1
 const OFFSET_DISTANCE = 5
 
-const fadeMeshes = (group: any, opacity: number): void => {
+const fadeMeshes = (group: any, opacity: number, immediate = false): void => {
   if (!group) return
   group.traverse((child: any) => {
     if (child.isMesh && child.material) {
-      child.material.transparent = true
-      gsap.to(child.material, { opacity, duration: ANIMATION_DURATION })
+      const materials = Array.isArray(child.material) ? child.material : [child.material]
+      materials.forEach((mat: any) => {
+        if (mat) {
+          mat.transparent = true
+          if (immediate) {
+            mat.opacity = opacity
+            mat.needsUpdate = true
+          } else {
+            gsap.to(mat, { opacity, duration: ANIMATION_DURATION })
+          }
+        }
+      })
     }
   })
 }
@@ -41,8 +51,8 @@ const ModelSwitcher = ({ scale, isMobile, color }: ModelSwitcherProps) => {
     if (!smallMacbookRef.current || !largeMacbookRef.current) return
     smallMacbookRef.current.position.x = 0
     largeMacbookRef.current.position.x = OFFSET_DISTANCE
-    fadeMeshes(smallMacbookRef.current, 1)
-    fadeMeshes(largeMacbookRef.current, 0)
+    fadeMeshes(smallMacbookRef.current, 1, true)
+    fadeMeshes(largeMacbookRef.current, 0, true)
   }, [])
 
   useGSAP(() => {
