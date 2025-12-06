@@ -249,6 +249,11 @@ body {
 
       img {
         @apply max-w-40 lg:max-w-108 2xl:max-w-140 object-cover;
+
+        /* Initial state for animations on desktop */
+        @media (min-width: 1025px) {
+          @apply opacity-0;
+        }
       }
 
       .p1 {
@@ -269,6 +274,8 @@ body {
 
       .p5 {
         @apply absolute bottom-[20%] left-1/2 -translate-x-1/2 scale-150;
+        /* Always visible, not affected by opacity-0 */
+        opacity: 1 !important;
       }
 
       .p6 {
